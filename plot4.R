@@ -1,0 +1,25 @@
+library(dplyr) 
+download.file("https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2Fhousehold_power_consumption.zip", "ElectricPower.zip", method="curl")
+unzip("ElectricPower.zip")
+ElectricPower <- read.table("household_power_consumption.txt", sep=";", na.strings ="?", header = TRUE, stringsAsFactors = FALSE)
+selection <- filter(ElectricPower, Date=="1/2/2007" | Date=="2/2/2007")
+FebruaryData <- mutate(selection, DateTime = paste(selection$Date, selection$Time, sep=" "))
+FebruaryData <- transform(FebruaryData, DateTime=strptime(DateTime, "%d/%m/%Y %H:%M:%S"))
+png(filename="plot4.png", width = 480, height = 480)
+par(mfcol=c(2,2), mar=c(7,5,2,2))
+        plot(FebruaryData$DateTime, FebruaryData$Global_active_power, type="n", xlab="", ylab="Global Active Power")
+        lines(FebruaryData$DateTime, FebruaryData$Global_active_power, col="black")
+
+        plot(FebruaryData$DateTime, FebruaryData$Sub_metering_1, type="n", xlab="", ylab="Energy sub metering")
+        lines(FebruaryData$DateTime, FebruaryData$Sub_metering_1, col="black")
+        lines(FebruaryData$DateTime, FebruaryData$Sub_metering_2, col="red")
+        lines(FebruaryData$DateTime, FebruaryData$Sub_metering_3, col="blue")
+        legend("topright", lty=1, col=c("black", "red", "blue"), legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"), bty="n")
+
+        plot(FebruaryData$DateTime, FebruaryData$Voltage, type="n", xlab="datetime", ylab="Voltage")
+        lines(FebruaryData$DateTime, FebruaryData$Voltage, col="black")
+
+        plot(FebruaryData$DateTime, FebruaryData$Global_reactive_power, type="n", xlab="datetime", ylab="Global_reactive_power")
+        lines(FebruaryData$DateTime, FebruaryData$Global_reactive_power, col="black")
+        
+dev.off()
